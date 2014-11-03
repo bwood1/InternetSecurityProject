@@ -8,13 +8,11 @@
             //do login stuff here
             if (!$this->checkIfUserExists($pass)) {
                 return 'invalidLogin';
-            }
-
-            if (!$this->checkPassword($user, $pass)) {
+            } else if (!$this->checkPassword($user, $pass)) {
                 return 'invalidLogin';
+            } else {
+                return 'validLogin';
             }
-
-            return 'validLogin';
         }
 
         function checkIfUserExists($user) {

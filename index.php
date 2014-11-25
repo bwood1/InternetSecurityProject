@@ -34,6 +34,8 @@ if (defined('ENVIRONMENT'))
 	{
 		case 'development':
 			error_reporting(E_ALL);
+			// Display errors in output
+			ini_set('display_errors', 1);
 		break;
 
 		case 'testing':
@@ -200,6 +202,5 @@ if (defined('ENVIRONMENT'))
  *
  */
 require_once BASEPATH.'core/CodeIgniter.php';
-
 /* End of file index.php */
 /* Location: ./index.php */

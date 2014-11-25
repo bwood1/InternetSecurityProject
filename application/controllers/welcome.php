@@ -18,10 +18,21 @@ class Welcome extends CI_Controller {
 	 * @see http://codeigniter.com/user_guide/general/urls.html
 	 */
 	public function index() {
-		$this->load->view('templates/header');
-		$this->load->view('login/registerUserModal');
-		$this->load->view('login/login');
-		$this->load->view('login/loginScript');
+		$this->load->helper('session');
+
+		if (checkIfLoggedIn()) {
+			// load login page
+			redirect('dashboard');
+		} else {
+			$data = array(
+				"title" => "Welcome"
+			);
+
+			$this->load->view('templates/header', $data);
+			$this->load->view('login/registerUserModal');
+			$this->load->view('login/login');
+			$this->load->view('login/loginScript');
+		}
 	}
 
 	public function submitLogin() {
@@ -31,10 +42,36 @@ class Welcome extends CI_Controller {
 		$this->load->helper('database');
 		loadModel('login_model');
 
-		if ($this->login_model->login($user, $pass)) {
-			# code...
+		$loginResult = $this->login_model->login($user, $pass);
+
+		switch ($loginResult) {
+			case 'invalidLogin':
+				echo "invalidLogin";
+				break;
+			case 'validLogin':
+				$this->session->set_userdata('username', $user);
+				$this->session->set_userdata('loggedIn', TRUE);
+				echo 'validLogin';
+				break;
+			default:
+				echo "invalidLogin";
+				break;
 		}
-		// echo $this->login_model->login($user, $pass);
+	}
+
+	public function logOut() {
+		$this->load->helper('session');
+		$this->session->sess_destroy();
+		redirect('welcome');
+	}
+
+	public function loadPage() {
+		$redirect = $this->session->userdata('redirect');
+		if ($redirect != null || $redirect != '') {
+			redirect($redirect);
+		} else {
+			redirect('dashboard');
+		}
 	}
 
 	public function createUser() {
@@ -146,21 +183,6 @@ class Welcome extends CI_Controller {
 
 		return $strength;
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
 
 /* End of file welcome.php */
